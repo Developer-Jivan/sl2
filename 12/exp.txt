@@ -1,0 +1,832 @@
+# CNN using TensorFlow for Image Classification — Full Deep Explanation (Beginner + Exam Ready)
+
+You asked **proper complete points**, so I’ll explain from zero in a way you can write in exam + explain in viva confidently.
+
+---
+
+# 1. Aim of This Practical
+
+**Implement CNN (Convolutional Neural Network) using TensorFlow for image classification.**
+
+We use **Fashion MNIST dataset**.
+
+Dataset contains grayscale images of clothes like:
+
+* T-shirt
+* Trouser
+* Bag
+* Shoe
+* Dress etc.
+
+Each image size:
+
+```text
+28 × 28 pixels
+```
+
+Total classes:
+
+```text
+10 classes (0 to 9)
+```
+
+---
+
+# 2. What is Image Classification?
+
+Input:
+
+```text
+Image of object
+```
+
+Output:
+
+```text
+Predicted label
+```
+
+Example:
+
+```text
+Image of shoe → Output = 9
+Image of bag  → Output = 8
+```
+
+---
+
+# 3. Why CNN Instead of Normal ANN?
+
+Normal ANN:
+
+* Flattens image
+* Loses spatial relation
+* Too many parameters
+
+CNN:
+
+* Detects edges
+* Detects shapes
+* Detects patterns
+* Better for images
+
+---
+
+# 4. Full Flow of Program
+
+```text
+Load Images
+   ↓
+Normalize Pixels
+   ↓
+Build CNN
+   ↓
+Train Model
+   ↓
+Test Accuracy
+   ↓
+Predict New Images
+```
+
+---
+
+# 5. Import Libraries
+
+```python
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from tensorflow.keras.datasets import fashion_mnist
+import matplotlib.pyplot as plt
+import numpy as np
+```
+
+## Meaning
+
+### TensorFlow
+
+Used to build neural network.
+
+### layers
+
+Used to create CNN layers.
+
+### models
+
+Used to combine layers.
+
+### fashion_mnist
+
+Ready dataset.
+
+### matplotlib
+
+To display images and graphs.
+
+### numpy
+
+For arrays and prediction handling.
+
+---
+
+# 6. Load Dataset
+
+```python
+(x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
+```
+
+---
+
+## Output Structure
+
+Training:
+
+```text
+x_train = images
+y_train = labels
+```
+
+Testing:
+
+```text
+x_test = images
+y_test = labels
+```
+
+---
+
+## Shapes
+
+```text
+x_train = (60000, 28, 28)
+y_train = (60000)
+
+x_test = (10000, 28, 28)
+y_test = (10000)
+```
+
+Means:
+
+* 60,000 training images
+* 10,000 testing images
+
+---
+
+# 7. Pixel Values
+
+Each pixel stores brightness:
+
+```text
+0 = black
+255 = white
+```
+
+Example:
+
+```text
+[0, 20, 255]
+```
+
+---
+
+# 8. Normalize Data
+
+```python
+x_train = x_train / 255.0
+x_test = x_test / 255.0
+```
+
+---
+
+## Why?
+
+Large values slow training.
+
+Convert:
+
+```text
+0 to 255  →  0 to 1
+```
+
+Example:
+
+```text
+255 / 255 = 1
+128 / 255 = 0.50
+```
+
+---
+
+## Benefit
+
+* Faster training
+* Stable learning
+* Better accuracy
+
+---
+
+# 9. Reshape Data
+
+```python
+x_train = x_train.reshape(-1,28,28,1)
+x_test = x_test.reshape(-1,28,28,1)
+```
+
+---
+
+## Why?
+
+CNN expects:
+
+```text
+(height, width, channels)
+```
+
+For grayscale:
+
+```text
+channel = 1
+```
+
+So image becomes:
+
+```text
+28 × 28 × 1
+```
+
+---
+
+## Meaning of -1
+
+Auto calculate number of images.
+
+---
+
+# 10. Show Images
+
+```python
+plt.imshow(...)
+```
+
+Displays images.
+
+Used only for visualization.
+
+---
+
+# 11. CNN Model Building
+
+```python
+model = models.Sequential()
+```
+
+Sequential means:
+
+```text
+Layer1 → Layer2 → Layer3 → Output
+```
+
+---
+
+# 12. First Convolution Layer
+
+```python
+Conv2D(32,(3,3),activation='relu')
+```
+
+---
+
+## Meaning
+
+* 32 filters
+* Filter size = 3×3
+* ReLU activation
+
+---
+
+## What Filter Does?
+
+Moves on image and detects patterns:
+
+```text
+edges
+corners
+textures
+```
+
+---
+
+## Example
+
+```text
+Image patch:
+
+1 1 0
+1 0 0
+1 1 0
+```
+
+Could represent vertical edge.
+
+---
+
+# 13. Why Many Filters?
+
+Each filter learns different feature.
+
+Example:
+
+* filter1 = edge
+* filter2 = curve
+* filter3 = corner
+
+---
+
+# 14. Activation ReLU
+
+```python
+relu(x) = max(0,x)
+```
+
+If negative:
+
+```text
+0
+```
+
+If positive:
+
+```text
+same value
+```
+
+Example:
+
+```text
+-3 → 0
+5 → 5
+```
+
+---
+
+## Why ReLU?
+
+* Fast
+* Prevents vanishing gradient
+* Common in CNN
+
+---
+
+# 15. MaxPooling Layer
+
+```python
+MaxPooling2D((2,2))
+```
+
+---
+
+## What It Does?
+
+Reduces image size.
+
+Take max value from 2×2 area.
+
+Example:
+
+```text
+2 5
+1 3
+```
+
+Output:
+
+```text
+5
+```
+
+---
+
+## Benefits
+
+* Faster
+* Less memory
+* Keeps strong features
+
+---
+
+# 16. Second Conv Layer
+
+```python
+Conv2D(64,(3,3),activation='relu')
+```
+
+Now learns deeper features:
+
+* sleeves
+* shoe shape
+* bag handles
+
+---
+
+# 17. Flatten Layer
+
+```python
+Flatten()
+```
+
+Converts 2D feature maps into 1D vector.
+
+Example:
+
+```text
+[ [1,2],
+  [3,4] ]
+
+→ [1,2,3,4]
+```
+
+Needed before Dense layer.
+
+---
+
+# 18. Dense Hidden Layer
+
+```python
+Dense(64, activation='relu')
+```
+
+64 neurons learn combinations of features.
+
+Example:
+
+```text
+laces + sole = shoe
+strap + heel = sandal
+```
+
+---
+
+# 19. Output Layer
+
+```python
+Dense(10, activation='softmax')
+```
+
+Because 10 classes.
+
+---
+
+# 20. Softmax
+
+Converts outputs into probabilities.
+
+Example:
+
+```text
+[0.01,0.02,0.80,0.05,...]
+```
+
+Highest probability = predicted class.
+
+---
+
+# 21. Model Compile
+
+```python
+model.compile(
+ optimizer='adam',
+ loss='sparse_categorical_crossentropy',
+ metrics=['accuracy']
+)
+```
+
+---
+
+# 22. Optimizer = Adam
+
+Updates weights automatically using gradients.
+
+Very popular and fast.
+
+---
+
+# 23. Loss Function
+
+```text
+sparse_categorical_crossentropy
+```
+
+Used when:
+
+* many classes
+* labels are integers (0 to 9)
+
+---
+
+# 24. Accuracy Metric
+
+Measures:
+
+```text
+Correct predictions / Total predictions
+```
+
+Example:
+
+```text
+90 correct out of 100 = 90%
+```
+
+---
+
+# 25. Train Model
+
+```python
+model.fit(...)
+```
+
+```python
+epochs=5
+batch_size=64
+validation_split=0.1
+```
+
+---
+
+# 26. Meaning of Epoch
+
+1 epoch = full training data used once.
+
+5 epochs means:
+
+```text
+whole dataset used 5 times
+```
+
+---
+
+# 27. Batch Size = 64
+
+Instead of 60000 images at once:
+
+Train in small groups of 64.
+
+Benefits:
+
+* less memory
+* faster updates
+
+---
+
+# 28. Validation Split = 0.1
+
+10% training data used for checking performance.
+
+Used to detect overfitting.
+
+---
+
+# 29. During Training What Happens?
+
+For each batch:
+
+```text
+Input image
+→ Forward pass
+→ Prediction
+→ Compare with true label
+→ Calculate loss
+→ Backpropagation
+→ Update weights
+```
+
+Repeat many times.
+
+---
+
+# 30. Backpropagation (Very Important Viva)
+
+Error moves backward.
+
+```text
+Output error
+↓
+Adjust last layer
+↓
+Adjust previous layers
+↓
+Better prediction next time
+```
+
+---
+
+# 31. Evaluate Model
+
+```python
+loss, accuracy = model.evaluate(x_test, y_test)
+```
+
+Uses unseen test data.
+
+Gives real performance.
+
+---
+
+# 32. Accuracy Graph
+
+```python
+history.history['accuracy']
+history.history['val_accuracy']
+```
+
+Shows learning over epochs.
+
+---
+
+## Good Graph
+
+Train ↑
+Validation ↑
+
+---
+
+## Bad Graph
+
+Train ↑
+Validation ↓
+
+Means overfitting.
+
+---
+
+# 33. Prediction
+
+```python
+pred = model.predict(x_test)
+np.argmax(pred[i])
+```
+
+If output:
+
+```text
+[0.01,0.02,0.90,0.03...]
+```
+
+Highest index = predicted class.
+
+---
+
+# 34. Why argmax?
+
+Returns position of max value.
+
+Example:
+
+```text
+[2,5,1] → index 1
+```
+
+---
+
+# 35. Important Tensor Shapes
+
+Before reshape:
+
+```text
+(60000,28,28)
+```
+
+After reshape:
+
+```text
+(60000,28,28,1)
+```
+
+After Flatten:
+
+```text
+1D vector
+```
+
+---
+
+# 36. Expected Accuracy
+
+Usually:
+
+```text
+88% to 92%
+```
+
+with simple CNN.
+
+---
+
+# 37. Why CNN Works So Well
+
+Because it learns hierarchy:
+
+```text
+Edges
+→ Curves
+→ Parts
+→ Full object
+```
+
+---
+
+# 38. Common Beginner Mistakes
+
+## 1. Forget normalization
+
+Bad learning.
+
+## 2. Forget reshape
+
+Conv2D error.
+
+## 3. Wrong output neurons
+
+Need 10 neurons.
+
+## 4. Wrong loss function
+
+For integer labels use sparse categorical crossentropy.
+
+## 5. Too many epochs
+
+Overfitting.
+
+---
+
+# 39. Viva Questions Answers
+
+## Why CNN used?
+
+Best for image data.
+
+## Why ReLU?
+
+Fast, avoids vanishing gradient.
+
+## Why Softmax?
+
+Multi-class probabilities.
+
+## Why MaxPooling?
+
+Reduce size, keep important features.
+
+## Why Flatten?
+
+Convert matrix to vector.
+
+## Why Adam?
+
+Efficient optimizer.
+
+---
+
+# 40. Full Architecture Diagram
+
+```text
+28x28x1 Image
+     ↓
+Conv2D (32)
+     ↓
+MaxPool
+     ↓
+Conv2D (64)
+     ↓
+MaxPool
+     ↓
+Flatten
+     ↓
+Dense(64)
+     ↓
+Dense(10 Softmax)
+     ↓
+Class Output
+```
+
+---
+
+# 41. Real Life Applications
+
+* Face recognition
+* Medical X-ray classification
+* Vehicle detection
+* OCR text reading
+* Security systems
+* Fashion product tagging
+
+---
+
+# 42. One-Line Exam Summary
+
+CNN uses convolution filters and pooling layers to automatically extract image features and classify images accurately.
+
+---
+
+# 43. If You Want FULL LINE-BY-LINE explanation of your exact code with formulas + internal tensor sizes + outputs after each layer, say:
+
+**“Explain line by line deeply”**
