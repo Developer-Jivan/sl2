@@ -1,0 +1,369 @@
+## McCulloch-Pitts Neural Network for ANDNOT Function — Deep Explanation
+
+This program creates an **ANDNOT logic gate** using a **McCulloch-Pitts neuron**.
+
+### ANDNOT Means:
+
+[
+Y = X1 \ AND \ (NOT\ X2)
+]
+
+Output becomes **1 only when X1 = 1 and X2 = 0**
+
+| X1 | X2 | Output |
+| -- | -- | ------ |
+| 0  | 0  | 0      |
+| 0  | 1  | 0      |
+| 1  | 0  | 1      |
+| 1  | 1  | 0      |
+
+---
+
+# Full Concept
+
+A **McCulloch-Pitts neuron** is the earliest artificial neuron model.
+
+It works in 3 steps:
+
+1. Multiply inputs by weights
+2. Add them
+3. Compare with threshold
+4. If sum ≥ threshold → output = 1 else 0
+
+---
+
+# ASCII Diagram
+
+```text
+      X1 ----(w1=1)----\
+                         >----[ SUM ]----[ Step Function ]---- Y
+      X2 ----(w2=-1)---/
+```
+
+### Meaning:
+
+* **X1 has positive weight (+1)** → helps activate neuron
+* **X2 has negative weight (-1)** → blocks neuron
+* Threshold = 1
+
+So X2 behaves like NOT.
+
+---
+
+# Code Breakdown
+
+---
+
+# 1. Step Function
+
+```python
+def step_function(net, threshold):
+    if net >= threshold:
+        return 1
+    else:
+        return 0
+```
+
+---
+
+## Intuition
+
+Neuron decides:
+
+* If enough signal comes → fire (1)
+* Otherwise → no fire (0)
+
+---
+
+## Concept
+
+This is called **Binary Step Activation Function**
+
+[
+f(net)=
+\begin{cases}
+1,\ net \ge \theta \
+0,\ net < \theta
+\end{cases}
+]
+
+Where:
+
+* net = total weighted sum
+* θ = threshold
+
+---
+
+## Code Mapping
+
+If total sum reaches threshold → returns 1.
+
+---
+
+# 2. Input Combinations
+
+```python
+inputs = [(0,0), (0,1), (1,0), (1,1)]
+```
+
+---
+
+## Intuition
+
+Binary inputs can only be 0 or 1.
+
+Two inputs give 4 combinations.
+
+---
+
+## Concept
+
+For n binary inputs:
+
+[
+2^n
+]
+
+For 2 inputs:
+
+[
+2^2 = 4
+]
+
+---
+
+## Code Mapping
+
+Each tuple means:
+
+```python
+(x1, x2)
+```
+
+Example:
+
+```python
+(1,0)
+```
+
+Means X1=1, X2=0
+
+---
+
+# 3. Weights and Threshold
+
+```python
+w1 = 1
+w2 = -1
+threshold = 1
+```
+
+---
+
+## Intuition
+
+Weights decide importance.
+
+* Positive weight supports output
+* Negative weight suppresses output
+
+---
+
+## Why These Values?
+
+We need:
+
+```text
+Output = 1 only when:
+X1 = 1
+X2 = 0
+```
+
+So:
+
+* X1 should increase sum → +1
+* X2 should decrease sum → -1
+
+---
+
+# 4. Main Logic
+
+```python
+for x1, x2 in inputs:
+```
+
+Loop through all inputs.
+
+---
+
+## Net Input
+
+```python
+net_input = (x1 * w1) + (x2 * w2)
+```
+
+Formula:
+
+[
+net = x1w1 + x2w2
+]
+
+---
+
+## Output
+
+```python
+output = step_function(net_input, threshold)
+```
+
+Threshold decision.
+
+---
+
+# Full Calculation Table
+
+---
+
+## Case 1: X1=0, X2=0
+
+[
+net = (0)(1) + (0)(-1)=0
+]
+
+0 < 1 → Output = 0
+
+---
+
+## Case 2: X1=0, X2=1
+
+[
+net = (0)(1) + (1)(-1)=-1
+]
+
+-1 < 1 → Output = 0
+
+---
+
+## Case 3: X1=1, X2=0
+
+[
+net = (1)(1) + (0)(-1)=1
+]
+
+1 ≥ 1 → Output = 1 ✅
+
+---
+
+## Case 4: X1=1, X2=1
+
+[
+net = (1)(1) + (1)(-1)=0
+]
+
+0 < 1 → Output = 0
+
+---
+
+# Final Output
+
+```text
+X1  X2  Output
+0   0    0
+0   1    0
+1   0    1
+1   1    0
+```
+
+---
+
+# Why X2 Works as NOT?
+
+Because weight = -1
+
+When X2 = 1:
+
+```text
+It subtracts from total sum
+```
+
+So it blocks activation.
+
+That simulates:
+
+```text
+NOT X2
+```
+
+---
+
+# Important Viva Questions
+
+## Q1. Why negative weight used?
+
+To inhibit neuron output.
+
+---
+
+## Q2. Why threshold = 1?
+
+Need at least X1 active alone to fire neuron.
+
+---
+
+## Q3. Can this learn automatically?
+
+No. McCulloch-Pitts uses manually chosen weights.
+
+---
+
+## Q4. Which activation used?
+
+Binary Step Function.
+
+---
+
+## Q5. Is bias used?
+
+Threshold acts similar to bias.
+
+---
+
+# Pros
+
+* Very simple
+* Good for logic gates
+* Foundation of ANN
+
+---
+
+# Cons
+
+* No learning
+* Only binary output
+* Cannot solve complex tasks
+
+---
+
+# Applications
+
+* Logic gate simulation
+* ANN fundamentals
+* Pattern decision basics
+
+---
+
+# Core Memory Trick
+
+```text
+X1 positive
+X2 negative
+Threshold 1
+
+Only (1,0) gives output 1
+```
+
+---
+
+# One-Line Summary
+
+This neuron performs **X1 AND NOT X2** by using **positive weight for X1**, **negative weight for X2**, and **threshold = 1**.
