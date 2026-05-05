@@ -1,0 +1,1137 @@
+# ART Neural Network (Adaptive Resonance Theory) — Full Explanation with Formulas
+
+ART is an **unsupervised neural network** used for **clustering** patterns while still learning new patterns without forgetting old ones.
+
+It solves the **stability-plasticity problem**:
+
+* **Plasticity** = learn new data
+* **Stability** = keep old knowledge safe
+
+So ART can learn continuously.
+
+---
+
+# 1. What This Program Does
+
+We give binary patterns:
+
+```python
+[1 1 0 0]
+[1 1 0 1]
+[0 0 1 1]
+[0 1 1 1]
+```
+
+ART compares patterns and:
+
+* If similar → put in same cluster
+* If different → create new cluster
+
+---
+
+# 2. ART Network Structure
+
+ASCII Diagram:
+
+```text
+Input Layer (F1)  --->  Category Layer (F2)
+
+[ x1 x2 x3 x4 ]       [ C1 ]
+                       [ C2 ]
+                       [ C3 ]
+```
+
+### Layers:
+
+## F1 Layer = Input Layer
+
+Receives binary input pattern.
+
+Example:
+
+```text
+[1 1 0 0]
+```
+
+## F2 Layer = Category Layer
+
+Represents clusters/classes.
+
+Each neuron = one category.
+
+---
+
+# 3. Code Section by Section
+
+---
+
+# SECTION A — Import Library
+
+```python
+import numpy as np
+```
+
+Used for arrays and matrix math.
+
+---
+
+# SECTION B — Input Patterns
+
+```python
+X = np.array([
+    [1,1,0,0],
+    [1,1,0,1],
+    [0,0,1,1],
+    [0,1,1,1]
+])
+```
+
+Each row is one training sample.
+
+We have:
+
+* 4 patterns
+* each has 4 binary features
+
+---
+
+# SECTION C — Parameters
+
+```python
+num_features = 4
+max_clusters = 4
+vigilance = 0.6
+```
+
+---
+
+## Important Parameters
+
+## 1. num_features
+
+Number of inputs.
+
+```text
+x1 x2 x3 x4
+```
+
+---
+
+## 2. max_clusters
+
+Maximum categories allowed.
+
+---
+
+## 3. vigilance
+
+Most important ART parameter.
+
+Controls similarity requirement.
+
+### Formula:
+
+```text
+Match Score ≥ Vigilance
+```
+
+If true → accept cluster
+Else reject cluster
+
+---
+
+### Effect:
+
+| Vigilance    | Result         |
+| ------------ | -------------- |
+| Low (0.3)    | fewer clusters |
+| Medium (0.6) | balanced       |
+| High (0.9)   | more clusters  |
+
+---
+
+# SECTION D — Weight Initialization
+
+```python
+W = np.ones((max_clusters, num_features)) / (1 + num_features)
+T = np.ones((max_clusters, num_features))
+```
+
+---
+
+# Two Types of Weights
+
+## 1. Bottom-Up Weights (W)
+
+Input → Cluster
+
+### Formula:
+
+Initially:
+
+```text
+W = 1 / (1 + n)
+```
+
+Where:
+
+```text
+n = number of features
+```
+
+Here:
+
+```text
+1 / (1+4) = 0.2
+```
+
+So:
+
+```text
+[0.2 0.2 0.2 0.2]
+```
+
+---
+
+## 2. Top-Down Weights (T)
+
+Cluster → Input expectation.
+
+Initially:
+
+```text
+[1 1 1 1]
+```
+
+Means cluster accepts all features initially.
+
+---
+
+# ART Neural Network — Working From Loop (Very Simple)
+
+You understood setup part.
+Now I’ll explain **only from loop onward**, step by step.
+
+---
+
+# Main Loop in Code
+
+```python id="20n0zq"
+for pattern in X:
+```
+
+This means:
+
+Take each input pattern one by one.
+
+Our patterns are:
+
+```text id="jvhycn"
+1) [1 1 0 0]
+2) [1 1 0 1]
+3) [0 0 1 1]
+4) [0 1 1 1]
+```
+
+So loop runs **4 times**.
+
+---
+
+# Full Training Loop
+
+```python id="bb4lqu"
+for pattern in X:
+    assigned = False
+
+    for j in range(clusters_used):
+
+        match = np.sum(pattern * T[j]) / np.sum(pattern)
+
+        if match >= vigilance:
+            T[j] = pattern * T[j]
+            W[j] = T[j] / (0.5 + np.sum(T[j]))
+            assigned = True
+            break
+
+    if not assigned:
+        T[clusters_used] = pattern
+        W[clusters_used] = pattern / (0.5 + np.sum(pattern))
+        clusters_used += 1
+```
+
+Now let’s run manually.
+
+---
+
+# Before Loop Starts
+
+```text id="r7vbhf"
+clusters_used = 0
+```
+
+Means no clusters exist yet.
+
+---
+
+# ITERATION 1
+
+Input:
+
+```text id="ybx7mr"
+pattern = [1 1 0 0]
+```
+
+---
+
+## Step 1:
+
+```python id="31o2v3"
+assigned = False
+```
+
+Means not yet placed in any cluster.
+
+---
+
+## Step 2:
+
+```python id="wq0slj"
+for j in range(clusters_used):
+```
+
+But:
+
+```text id="8m1v91"
+clusters_used = 0
+```
+
+So:
+
+```python id="71v0jj"
+range(0)
+```
+
+No loop runs.
+
+Why? Because no cluster exists.
+
+---
+
+## Step 3:
+
+```python id="x2c7e4"
+if not assigned:
+```
+
+Since assigned = False
+
+So TRUE.
+
+Then create new cluster.
+
+```python id="we5h5j"
+T[0] = [1 1 0 0]
+W[0] = pattern / (0.5 + sum(pattern))
+```
+
+Sum of pattern:
+
+```text id="clvxde"
+1+1+0+0 = 2
+```
+
+So:
+
+```text id="br4lmz"
+W[0] = [1,1,0,0] / 2.5
+     = [0.4,0.4,0,0]
+```
+
+Then:
+
+```python id="7pv9yk"
+clusters_used = 1
+```
+
+---
+
+# After Iteration 1
+
+```text id="65pvy5"
+Cluster 1 created
+```
+
+---
+
+# ITERATION 2
+
+Input:
+
+```text id="6o0d4n"
+pattern = [1 1 0 1]
+```
+
+---
+
+## Step 1
+
+```python id="8w6dl6"
+assigned = False
+```
+
+---
+
+## Step 2
+
+Now:
+
+```text id="h8tg14"
+clusters_used = 1
+```
+
+So:
+
+```python id="2xxjvw"
+for j in range(1)
+```
+
+Means only:
+
+```text id="3svtkg"
+j = 0
+```
+
+Check Cluster 1.
+
+---
+
+# Match Formula
+
+```python id="7lshj4"
+match = np.sum(pattern * T[0]) / np.sum(pattern)
+```
+
+---
+
+## Values:
+
+Pattern:
+
+```text id="hqvjlwm"
+[1 1 0 1]
+```
+
+Cluster 1:
+
+```text id="n0b6j5"
+T[0] = [1 1 0 0]
+```
+
+Multiply:
+
+```text id="mtb2dw"
+[1*1, 1*1, 0*0, 1*0]
+= [1 1 0 0]
+```
+
+Sum:
+
+```text id="wop0gd"
+2
+```
+
+Denominator:
+
+```text id="6shzth"
+sum(pattern)=3
+```
+
+So:
+
+```text id="57ow0p"
+match = 2/3 = 0.67
+```
+
+---
+
+## Vigilance Check
+
+```python id="fc7gxg"
+if match >= 0.6
+```
+
+```text id="1c8avt"
+0.67 >= 0.6
+TRUE
+```
+
+So cluster accepted.
+
+---
+
+## Update Weights
+
+```python id="snhxxq"
+T[0] = pattern * T[0]
+```
+
+```text id="e0c3kr"
+[1 1 0 1] * [1 1 0 0]
+= [1 1 0 0]
+```
+
+No change.
+
+Then:
+
+```python id="s7x07j"
+assigned = True
+break
+```
+
+Break means stop checking more clusters.
+
+---
+
+# After Iteration 2
+
+Pattern joined Cluster 1.
+
+---
+
+# ITERATION 3
+
+Input:
+
+```text id="to7f5z"
+pattern = [0 0 1 1]
+```
+
+---
+
+## Check Cluster 1
+
+```text id="n6z0ik"
+T[0] = [1 1 0 0]
+```
+
+Multiply:
+
+```text id="vg2gyv"
+[0 0 1 1] * [1 1 0 0]
+= [0 0 0 0]
+```
+
+Sum:
+
+```text id="m6zccv"
+0
+```
+
+Denominator:
+
+```text id="jj1bhv"
+2
+```
+
+So:
+
+```text id="g64j5s"
+match = 0/2 = 0
+```
+
+Check:
+
+```text id="jlwm3n"
+0 >= 0.6 ? False
+```
+
+No match.
+
+---
+
+## No Cluster Accepted
+
+So:
+
+```python id="nms56m"
+if not assigned:
+```
+
+Create Cluster 2.
+
+```text id="x18z3g"
+T[1] = [0 0 1 1]
+clusters_used = 2
+```
+
+---
+
+# ITERATION 4
+
+Input:
+
+```text id="khl0cu"
+pattern = [0 1 1 1]
+```
+
+Now 2 clusters exist.
+
+---
+
+# Check Cluster 1
+
+```text id="i7cz6l"
+T1 = [1 1 0 0]
+```
+
+Multiply:
+
+```text id="a0spnn"
+[0 1 1 1]*[1 1 0 0]
+= [0 1 0 0]
+```
+
+Sum = 1
+
+Denominator:
+
+```text id="n6jlwm"
+3
+```
+
+Match:
+
+```text id="0wq22d"
+1/3 = 0.33
+```
+
+Fail.
+
+---
+
+# Check Cluster 2
+
+```text id="56f2de"
+T2 = [0 0 1 1]
+```
+
+Multiply:
+
+```text id="jz5ocp"
+[0 1 1 1]*[0 0 1 1]
+= [0 0 1 1]
+```
+
+Sum = 2
+
+Match:
+
+```text id="swxsg8"
+2/3 = 0.67
+```
+
+Pass.
+
+So joins Cluster 2.
+
+---
+
+# Final Clusters
+
+```text id="vvigyx"
+Cluster 1 = patterns similar to [1 1 0 0]
+
+Cluster 2 = patterns similar to [0 0 1 1]
+```
+
+---
+
+# Why Nested Loop?
+
+## Outer Loop
+
+```python id="9m9w93"
+for pattern in X
+```
+
+Take each pattern.
+
+---
+
+## Inner Loop
+
+```python id="ngzkr5"
+for j in range(clusters_used)
+```
+
+Try every existing cluster.
+
+---
+
+# Real-Life Example
+
+Like sorting students into groups.
+
+For each new student:
+
+* Check Group 1 similarity
+* Check Group 2 similarity
+* If no fit → make new group
+
+That is ART.
+
+---
+
+# Very Short Summary
+
+```text id="h3vlxh"
+For each pattern:
+   Check all clusters
+   If similar enough:
+        join cluster
+   Else:
+        create new cluster
+```
+
+---
+
+# Most Confusing Lines Simplified
+
+## This line:
+
+```python id="3n7vze"
+break
+```
+
+Means:
+
+Once matched cluster found, stop searching.
+
+---
+
+## This line:
+
+```python id="nbw0et"
+assigned = True
+```
+
+Means:
+
+Pattern already got cluster.
+
+---
+
+## This line:
+
+```python id="4ejjlwm"
+if not assigned:
+```
+
+Means:
+
+No cluster accepted → create new one.
+
+---
+
+# One-Line Memory Trick
+
+```text id="3j9j1e"
+Outer loop = patterns
+Inner loop = clusters
+```
+
+---
+
+# If you want, I can also make **ART loop animation table (iteration by iteration with rows/columns)** so it becomes crystal clear.
+
+
+# SECTION E — Training Starts
+
+```python
+for pattern in X:
+```
+
+One by one process every pattern.
+
+---
+
+# Example:
+
+First pattern:
+
+```text
+[1 1 0 0]
+```
+
+---
+
+# SECTION F — Match Calculation
+
+```python
+match = np.sum(pattern * T[j]) / np.sum(pattern)
+```
+
+Most important formula.
+
+---
+
+# Formula:
+
+```text
+Match = |X ∩ Tj| / |X|
+```
+
+Where:
+
+* (X) = input pattern
+* (Tj) = top-down weights of cluster j
+* numerator = common ON bits
+* denominator = total ON bits in input
+
+---
+
+# Example
+
+Input:
+
+```text
+X = [1 1 0 0]
+```
+
+Cluster:
+
+```text
+T = [1 1 1 1]
+```
+
+Multiply:
+
+```text
+[1 1 0 0]
+```
+
+Sum:
+
+```text
+2
+```
+
+Input ON bits:
+
+```text
+2
+```
+
+So:
+
+```text
+Match = 2/2 = 1.0
+```
+
+Perfect match.
+
+---
+
+# SECTION G — Vigilance Test
+
+```python
+if match >= vigilance:
+```
+
+Check:
+
+```text
+1.0 >= 0.6
+```
+
+True → cluster accepted.
+
+This is called **Resonance** in ART.
+
+---
+
+# SECTION H — Weight Update
+
+```python
+T[j] = pattern * T[j]
+W[j] = T[j] / (0.5 + np.sum(T[j]))
+```
+
+---
+
+# Top-Down Update Formula
+
+```text
+Tnew = X * Told
+```
+
+Bitwise AND behavior.
+
+Keeps only common features.
+
+---
+
+# Example
+
+```text
+X    = [1 1 0 0]
+Told = [1 1 1 1]
+```
+
+New:
+
+```text
+Tnew = [1 1 0 0]
+```
+
+---
+
+# Bottom-Up Update Formula
+
+```text
+Wj = Tj / (0.5 + |Tj|)
+```
+
+Where:
+
+* |Tj| = number of ones
+
+Example:
+
+```text
+Tj = [1 1 0 0]
+|Tj| = 2
+```
+
+So:
+
+```text
+W = [1/2.5, 1/2.5, 0, 0]
+```
+
+```text
+= [0.4, 0.4, 0, 0]
+```
+
+---
+
+# Why 0.5 Added?
+
+Prevents division by zero and stabilizes learning.
+
+---
+
+# SECTION I — If No Cluster Matches
+
+```python
+if not assigned:
+```
+
+Then:
+
+```python
+creates Cluster
+```
+
+New category neuron formed.
+
+---
+
+# Example
+
+Pattern:
+
+```text
+[0 0 1 1]
+```
+
+Very different from cluster 1.
+
+So create cluster 2.
+
+---
+
+# Final Possible Output
+
+```text
+Pattern [1 1 0 0] creates Cluster 1
+Pattern [1 1 0 1] belongs to Cluster 1
+Pattern [0 0 1 1] creates Cluster 2
+Pattern [0 1 1 1] creates Cluster 3
+```
+
+---
+
+# Final Top Down Weights Meaning
+
+Example:
+
+```text
+Cluster 1 : [1 1 0 0]
+Cluster 2 : [0 0 1 1]
+Cluster 3 : [0 1 1 1]
+```
+
+Each cluster stores learned prototype.
+
+---
+
+# 4. Why ART Is Special
+
+Normal clustering may forget old data.
+
+ART:
+
+✔ Learns new categories
+✔ Keeps old memory
+✔ Online learning possible
+✔ No retraining required
+
+---
+
+# 5. Important Formulas Summary
+
+## Match Score
+
+```text
+Match = Σ(X*Tj) / Σ(X)
+```
+
+---
+
+## Vigilance Test
+
+```text
+If Match ≥ ρ
+```
+
+Where:
+
+```text
+ρ = vigilance parameter
+```
+
+---
+
+## Top-Down Update
+
+```text
+Tnew = X * Told
+```
+
+---
+
+## Bottom-Up Update
+
+```text
+Wnew = Tnew / (0.5 + ΣTnew)
+```
+
+---
+
+# 6. Viva Questions
+
+## Q1 Why ART used?
+
+For clustering with stable continuous learning.
+
+---
+
+## Q2 What is vigilance?
+
+Similarity threshold deciding cluster acceptance.
+
+---
+
+## Q3 Why two weights?
+
+* Bottom-up → choose cluster
+* Top-down → compare expected pattern
+
+---
+
+## Q4 What is resonance?
+
+When input sufficiently matches cluster.
+
+---
+
+# 7. Advantages
+
+✔ Fast learning
+✔ Unsupervised
+✔ New cluster creation
+✔ No catastrophic forgetting
+
+---
+
+# 8. Disadvantages
+
+✘ Sensitive to vigilance
+✘ Mostly binary ART1 in basic form
+✘ Can create too many clusters
+
+---
+
+# 9. Applications
+
+* Pattern recognition
+* Document clustering
+* Image grouping
+* Real-time learning
+* Customer segmentation
+
+---
+
+# 10. One-Line Memory Trick
+
+```text
+ART = Compare → Match → If similar merge, else new cluster
+```
+
+---
+
+# 11. Beginner Mistakes
+
+## Wrong denominator
+
+Use:
+
+```python
+np.sum(pattern)
+```
+
+not total features.
+
+## Vigilance too high
+
+Creates many clusters.
+
+## Forget updating T and W
+
+Both must update.
+
+---
+
+# 12. Flowchart
+
+```text
+Input Pattern
+     ↓
+Compare with Cluster 1
+     ↓
+Match Score
+     ↓
+If Match ≥ Vigilance ?
+   Yes → Update weights
+   No  → Check next cluster
+     ↓
+No cluster matched?
+     ↓
+Create new cluster
+```
+
+---
+
+If you want, I can also give you **line-by-line dry run of this exact code with all 4 patterns** (very useful for viva + exam).
