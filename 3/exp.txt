@@ -1,0 +1,553 @@
+## Original Code (Exactly Kept)
+
+```python
+# Import libraries
+import numpy as np
+from sklearn.datasets import load_digits
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Perceptron
+from sklearn.metrics import accuracy_score, confusion_matrix
+import matplotlib.pyplot as plt
+
+# Load dataset
+digits = load_digits()
+
+# Features and labels
+X = digits.data
+y = digits.target
+
+# Convert to even (0) and odd (1)
+y = np.where(y % 2 == 0, 0, 1)
+
+# Split dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Train perceptron model
+model = Perceptron(max_iter=1000)
+model.fit(X_train, y_train)
+
+# Predictions
+y_pred = model.predict(X_test)
+
+# Accuracy
+print("Accuracy:", accuracy_score(y_test, y_pred))
+
+# Confusion Matrix
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+
+# Show some predictions
+for i in range(5):
+    plt.imshow(X_test[i].reshape(8,8), cmap='gray')
+    plt.title(f"Actual: {y_test[i]}  Predicted: {y_pred[i]}")
+    plt.show()
+```
+
+---
+
+# Deep Explanation (Easy + Exam Ready)
+
+# 1. Import Libraries
+
+```python
+import numpy as np
+from sklearn.datasets import load_digits
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Perceptron
+from sklearn.metrics import accuracy_score, confusion_matrix
+import matplotlib.pyplot as plt
+```
+
+## Intuition
+
+We import tools needed for data handling, model training, testing, and image display.
+
+## Concept
+
+Python libraries save time. Instead of building neural networks manually, we use prebuilt functions.
+
+## Code Mapping
+
+| Library            | Use            |
+| ------------------ | -------------- |
+| `numpy`            | Arrays, math   |
+| `load_digits`      | Digit dataset  |
+| `train_test_split` | Divide data    |
+| `Perceptron`       | Neural model   |
+| `accuracy_score`   | Find accuracy  |
+| `confusion_matrix` | Check mistakes |
+| `matplotlib`       | Show images    |
+
+---
+
+# 2. Load Dataset
+
+```python
+digits = load_digits()
+```
+
+## Intuition
+
+We load ready-made handwritten digit images (0–9).
+
+## Concept
+
+Dataset contains many small digit images for machine learning practice.
+
+Each image = **8 × 8 pixels**
+
+So every number is represented as brightness values.
+
+## Code Mapping
+
+`digits` contains:
+
+* `digits.data` → pixel values
+* `digits.target` → actual digit label
+
+---
+
+# 3. Features and Labels
+
+```python
+X = digits.data
+y = digits.target
+```
+
+## Intuition
+
+* `X` = input images
+* `y` = correct answers
+
+## Concept
+
+Machine learning uses:
+
+```text
+Input  → Output
+Image  → Digit
+```
+
+## Code Mapping
+
+`X` shape:
+
+```text
+(1797, 64)
+```
+
+Meaning:
+
+* 1797 images
+* each image has 64 pixels (8×8)
+
+---
+
+# ASCII Diagram
+
+```text
+8 x 8 image
+
+[0 1 5 8 9 4 0 0]
+[0 2 8 9 7 1 0 0]
+...
+```
+
+Flattened into:
+
+```text
+[0,1,5,8,9,4,0,0,0,2,8,9,...64 values]
+```
+
+---
+
+# 4. Convert to Even/Odd
+
+```python
+y = np.where(y % 2 == 0, 0, 1)
+```
+
+## Intuition
+
+We don’t need exact digit. Only need:
+
+* Even
+* Odd
+
+## Concept
+
+Use modulus operator `%`
+
+```text
+digit % 2 == 0 → Even
+digit % 2 == 1 → Odd
+```
+
+## Code Mapping
+
+Examples:
+
+| Digit | Result |
+| ----- | ------ |
+| 0     | 0      |
+| 1     | 1      |
+| 2     | 0      |
+| 3     | 1      |
+| 8     | 0      |
+| 9     | 1      |
+
+Final labels:
+
+```text
+0 = Even
+1 = Odd
+```
+
+---
+
+# 5. Split Dataset
+
+```python
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+```
+
+## Intuition
+
+Use some data for learning, some for testing.
+
+## Concept
+
+If model is tested on training data, results can be fake.
+
+So split:
+
+```text
+80% Training
+20% Testing
+```
+
+## Code Mapping
+
+| Variable  | Meaning          |
+| --------- | ---------------- |
+| `X_train` | training inputs  |
+| `X_test`  | testing inputs   |
+| `y_train` | training outputs |
+| `y_test`  | testing outputs  |
+
+`random_state=42`
+
+Same split every run.
+
+---
+
+# 6. Create Perceptron Model
+
+```python
+model = Perceptron(max_iter=1000)
+```
+
+## Intuition
+
+Create one artificial neuron classifier.
+
+## Concept
+
+Perceptron computes:
+
+```text
+y = w1x1 + w2x2 + ... + b
+```
+
+Then decision:
+
+```text
+If value > threshold → 1
+Else → 0
+```
+
+Since output is even/odd → binary classification.
+
+## Code Mapping
+
+`max_iter=1000`
+
+Means training can repeat up to 1000 times.
+
+---
+
+# ASCII Neural Diagram
+
+```text
+x1 ---\
+x2 ----> [ Perceptron ] ---> Even/Odd
+x3 ---/
+...
+x64--/
+```
+
+64 pixels enter model.
+
+---
+
+# 7. Train Model
+
+```python
+model.fit(X_train, y_train)
+```
+
+## Intuition
+
+Model studies examples and learns patterns.
+
+## Concept
+
+During training:
+
+1. Predict output
+2. Compare with actual output
+3. Update weights
+4. Repeat many times
+
+This is learning.
+
+## Code Mapping
+
+```text
+Images + labels → fit() → trained model
+```
+
+---
+
+# 8. Predictions
+
+```python
+y_pred = model.predict(X_test)
+```
+
+## Intuition
+
+Now ask trained model to classify unseen images.
+
+## Concept
+
+Model uses learned weights on new data.
+
+## Code Mapping
+
+Output may look like:
+
+```python
+[0 1 1 0 0 1]
+```
+
+---
+
+# 9. Accuracy
+
+```python
+print("Accuracy:", accuracy_score(y_test, y_pred))
+```
+
+## Intuition
+
+How many predictions were correct?
+
+## Formula
+
+```text
+Accuracy = Correct Predictions / Total Predictions
+```
+
+## Example
+
+```text
+90 correct out of 100 = 90%
+```
+
+---
+
+# 10. Confusion Matrix
+
+```python
+print(confusion_matrix(y_test, y_pred))
+```
+
+## Intuition
+
+Shows detailed right/wrong counts.
+
+## Example
+
+```text
+[[170 10]
+ [ 12 168]]
+```
+
+Meaning:
+
+```text
+170 even correctly predicted even
+10 even predicted odd
+12 odd predicted even
+168 odd correctly predicted odd
+```
+
+---
+
+# Matrix Layout
+
+```text
+            Predicted
+           Even   Odd
+Actual Even 170   10
+Actual Odd   12  168
+```
+
+---
+
+# 11. Show Predictions
+
+```python
+for i in range(5):
+    plt.imshow(X_test[i].reshape(8,8), cmap='gray')
+    plt.title(f"Actual: {y_test[i]}  Predicted: {y_pred[i]}")
+    plt.show()
+```
+
+## Intuition
+
+Display images and compare actual vs predicted.
+
+## Concept
+
+Each row has 64 values.
+
+Need convert back to:
+
+```text
+8 x 8 image
+```
+
+## Code Mapping
+
+```python
+reshape(8,8)
+```
+
+changes flat array to image.
+
+---
+
+# Why Perceptron Works Here
+
+Digits have pixel patterns.
+
+Example:
+
+```text
+Even numbers may have closed loops (0,8)
+Odd numbers may have vertical shapes (1,7)
+```
+
+Model learns useful patterns statistically.
+
+---
+
+# Important Parameters
+
+## `Perceptron(max_iter=1000)`
+
+| Parameter  | Meaning            |
+| ---------- | ------------------ |
+| `max_iter` | max training loops |
+
+More iterations = more learning chances.
+
+---
+
+# Common Viva Questions
+
+## 1. Why use Perceptron?
+
+Simple neural network for binary classification.
+
+## 2. Why convert labels?
+
+Need even/odd only, not exact digit.
+
+## 3. Why split data?
+
+To test generalization.
+
+## 4. What is accuracy?
+
+Correct predictions percentage.
+
+## 5. Why reshape?
+
+To show image from 64 pixels.
+
+---
+
+# Common Beginner Mistakes
+
+## Wrong reshape
+
+```python
+reshape(8,8)
+```
+
+not `(7,7)`.
+
+## Forget fit()
+
+Must train before predict.
+
+## Wrong labels
+
+Need binary labels for perceptron.
+
+---
+
+# Advantages
+
+* Fast
+* Simple
+* Easy for exams
+* Good for binary tasks
+
+# Limitations
+
+* Linear classifier
+* May fail on complex patterns
+* Better models exist (MLP/CNN)
+
+---
+
+# Final Flow
+
+```text
+Load Digits
+   ↓
+Convert labels to Even/Odd
+   ↓
+Split Data
+   ↓
+Train Perceptron
+   ↓
+Predict
+   ↓
+Accuracy + Confusion Matrix
+   ↓
+Show Images
+```
+
+---
+
+# One-Line Summary
+
+This program uses a **Perceptron Neural Network** to learn pixel patterns of handwritten digits and classify them as **even or odd**.
