@@ -1,0 +1,628 @@
+# Activation Functions in Neural Networks – Deep Easy Explanation
+
+## 🔷 Main Goal of This Program
+
+This program **plots different activation functions** used in Artificial Neural Networks (ANN).
+
+Activation function means:
+
+➡️ A function applied to neuron output
+➡️ It decides whether neuron should activate or not
+➡️ It adds **non-linearity**, so ANN can learn complex patterns
+
+Without activation functions:
+
+* Neural network becomes simple linear model
+* Cannot solve image, speech, classification problems well
+
+---
+
+# 🔷 Full Flow of Program
+
+```text
+Import Libraries
+      ↓
+Create Input Values x
+      ↓
+Define Activation Functions
+      ↓
+Plot Each Function
+      ↓
+Display Graphs
+```
+
+---
+
+# 🔷 1. Import Libraries
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+---
+
+## ✅ Intuition
+
+We need:
+
+* NumPy → for mathematics
+* Matplotlib → for graphs
+
+---
+
+## ✅ Concept
+
+### NumPy
+
+Used for:
+
+* arrays
+* exponential
+* max
+* tanh
+* where
+
+### Matplotlib
+
+Used to draw curves
+
+---
+
+## ✅ Code Mapping
+
+```python
+np.linspace()
+np.exp()
+plt.plot()
+plt.show()
+```
+
+---
+
+# 🔷 2. Create Input Values
+
+```python
+x = np.linspace(-10, 10, 100)
+```
+
+---
+
+## ✅ Intuition
+
+We need many x-values to draw graph smoothly.
+
+---
+
+## ✅ Concept
+
+Creates 100 numbers between:
+
+-10 to +10
+
+Like:
+
+```text
+-10, -9.8, -9.6 ... 9.8, 10
+```
+
+---
+
+## ✅ Why?
+
+Every activation function uses input x.
+
+---
+
+# 🔷 3. Step Function
+
+```python
+def step(x):
+    return np.where(x >= 0, 1, 0)
+```
+
+---
+
+## ✅ Intuition
+
+If input positive → ON
+Else → OFF
+
+---
+
+## ✅ Output
+
+```text
+x < 0  → 0
+x >=0  → 1
+```
+
+---
+
+## ASCII Graph
+
+```text
+1 |        ─────────
+0 |────────
+   -      0      +
+```
+
+---
+
+## ✅ Uses
+
+Old perceptron model
+
+---
+
+## ❌ Problem
+
+Not differentiable → bad for training modern ANN
+
+---
+
+# 🔷 4. Sigmoid Function
+
+```python
+def sigmoid(x):
+    return 1/(1+np.exp(-x))
+```
+
+---
+
+## ✅ Intuition
+
+Converts any value into:
+
+```text
+0 to 1
+```
+
+Used as probability.
+
+---
+
+## Formula
+
+```text
+σ(x)=1/(1+e^-x)
+```
+
+---
+
+## Graph
+
+```text
+1 |        ______
+  |      /
+0.5----/
+  |   /
+0 |__/
+```
+
+---
+
+## ✅ Uses
+
+Binary classification output layer
+
+---
+
+## ❌ Problems
+
+* Vanishing gradient
+* Slow training
+
+---
+
+# 🔷 5. Tanh Function
+
+```python
+def tanh(x):
+    return np.tanh(x)
+```
+
+---
+
+## ✅ Intuition
+
+Like sigmoid but output:
+
+```text
+-1 to +1
+```
+
+---
+
+## Graph
+
+```text
+1 |      ______
+0 |----/
+-1|___/
+```
+
+---
+
+## ✅ Better than sigmoid
+
+Because centered around 0
+
+---
+
+## Uses
+
+RNN, hidden layers (older models)
+
+---
+
+# 🔷 6. ReLU Function
+
+```python
+def relu(x):
+    return np.maximum(0, x)
+```
+
+---
+
+## Intuition
+
+Negative input → 0
+Positive input → same value
+
+---
+
+## Formula
+
+```text
+f(x)=max(0,x)
+```
+
+---
+
+## Graph
+
+```text
+|
+|       /
+|      /
+|_____/____
+     0
+```
+
+---
+
+## ✅ Why Popular?
+
+* Fast
+* Simple
+* Avoids vanishing gradient
+
+---
+
+## Uses
+
+Most hidden layers in deep learning
+
+---
+
+# 🔷 7. Leaky ReLU
+
+```python
+def leaky_relu(x):
+    return np.where(x>0,x,0.01*x)
+```
+
+---
+
+## Intuition
+
+Negative values not fully dead.
+
+Small slope remains.
+
+---
+
+## Output
+
+```text
+x>0  → x
+x<0  → 0.01x
+```
+
+---
+
+## Why Needed?
+
+ReLU may kill neuron permanently.
+
+Leaky ReLU fixes it.
+
+---
+
+## Graph
+
+```text
+      /
+     /
+----/----
+   /
+  /
+```
+
+(small negative slope)
+
+---
+
+# 🔷 8. ELU
+
+```python
+def elu(x):
+    return np.where(x>0,x,np.exp(x)-1)
+```
+
+---
+
+## Intuition
+
+Positive side = ReLU
+Negative side = smooth curve
+
+---
+
+## Why Good?
+
+* smoother than ReLU
+* helps learning
+
+---
+
+## Graph
+
+```text
+      /
+     /
+----/
+   )
+  )
+```
+
+---
+
+# 🔷 9. Softmax
+
+```python
+def softmax(x):
+    e = np.exp(x - np.max(x))
+    return e / e.sum()
+```
+
+---
+
+## Intuition
+
+Converts scores into probabilities.
+
+Example:
+
+```python
+[2,1,0.1]
+```
+
+Becomes:
+
+```text
+[0.66, 0.24, 0.10]
+```
+
+Sum = 1
+
+---
+
+## Used In
+
+Multi-class classification
+
+Example:
+
+* Cat
+* Dog
+* Bird
+
+---
+
+## Why subtract max?
+
+```python
+x - np.max(x)
+```
+
+Prevents huge exponential overflow.
+
+Very important trick.
+
+---
+
+# 🔷 10. Plotting Graphs
+
+```python
+plt.subplot(3,3,1)
+plt.plot(x, step(x))
+```
+
+---
+
+## Intuition
+
+Make many mini-graphs in one window.
+
+---
+
+## Meaning
+
+```text
+3 rows
+3 columns
+1st graph
+```
+
+---
+
+## Other Used Functions
+
+```python
+plt.title()
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+# 🔷 Softmax Bar Graph
+
+```python
+sample = np.array([2,1,0.1])
+y = softmax(sample)
+
+plt.bar(range(len(sample)), y)
+```
+
+---
+
+## Why Bar Graph?
+
+Softmax gives class probabilities.
+
+Bars easier than line graph.
+
+---
+
+# 🔷 Final Output
+
+You get 7 graphs:
+
+```text
+Step
+Sigmoid
+Tanh
+ReLU
+Leaky ReLU
+ELU
+Softmax
+```
+
+---
+
+# 🔷 Why Activation Functions Needed?
+
+Without activation:
+
+```text
+Output = linear only
+```
+
+With activation:
+
+```text
+Can learn curves
+Patterns
+Images
+Speech
+Text
+Complex decisions
+```
+
+---
+
+# 🔷 Common Viva Questions
+
+## Q1 Why use ReLU?
+
+Fast + simple + works well.
+
+---
+
+## Q2 Why sigmoid output layer?
+
+Gives probability 0 to 1.
+
+---
+
+## Q3 Why softmax?
+
+For multiple classes.
+
+---
+
+## Q4 Why tanh better than sigmoid?
+
+Range:
+
+```text
+-1 to 1
+```
+
+Zero centered.
+
+---
+
+## Q5 Why Leaky ReLU?
+
+Avoid dead neurons.
+
+---
+
+# 🔷 Common Mistakes
+
+## ❌ Using softmax in hidden layers
+
+Usually not used.
+
+## ❌ Forgetting np.max in softmax
+
+Can overflow.
+
+## ❌ Using step in backpropagation
+
+Not differentiable.
+
+---
+
+# 🔷 Which Activation Used Where?
+
+| Layer Type         | Best Choice |
+| ------------------ | ----------- |
+| Hidden Layer       | ReLU        |
+| Hidden Alternative | Leaky ReLU  |
+| Binary Output      | Sigmoid     |
+| Multi-class Output | Softmax     |
+
+---
+
+# 🔷 Easy Memory Trick
+
+```text
+Step      = ON/OFF
+Sigmoid   = Probability
+Tanh      = -1 to 1
+ReLU      = Most popular
+Leaky     = ReLU fix
+ELU       = Smooth ReLU
+Softmax   = Multi-class probability
+```
+
+---
+
+# 🔷 If This Comes In Exam Write:
+
+```text
+Activation functions introduce non-linearity in ANN.
+They help neural network learn complex patterns.
+Common functions are Sigmoid, Tanh, ReLU, Softmax.
+```
+
+---
+
+# 🔷 If You Want Next Level
+
+I can also explain **how each activation affects backpropagation gradients mathematically**, which is usually asked in ANN viva.
