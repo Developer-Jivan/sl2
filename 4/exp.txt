@@ -1,0 +1,649 @@
+# Perceptron Learning Law with Decision Region — Full Easy Explanation
+
+This program trains a **Perceptron Neural Network** to classify 2 classes and shows the **decision boundary / decision region** graphically.
+
+---
+
+# 1. What is Perceptron?
+
+A **Perceptron** is the simplest neural network having:
+
+* Inputs
+* Weights
+* Bias
+* Summation
+* Activation Function
+
+It performs:
+
+[
+y = sign(w_1x_1 + w_2x_2 + b)
+]
+
+If output ≥ 0 → class **1**
+Else → class **-1**
+
+---
+
+# 2. Goal of This Program
+
+We have points:
+
+| X1 | X2 | Class |
+| -- | -- | ----- |
+| 1  | 1  | -1    |
+| 2  | 1  | -1    |
+| 4  | 3  | 1     |
+| 5  | 4  | 1     |
+
+Need to separate them using a line.
+
+Blue points = class -1
+Red points = class 1
+
+---
+
+# 3. Code Breakdown Section Wise
+
+---
+
+# Section A: Import Libraries
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+---
+
+## Intuition
+
+We need:
+
+* `numpy` for matrix/math
+* `matplotlib` for graph
+
+---
+
+## Important Functions
+
+### `np.array()`
+
+Used to create arrays.
+
+### `plt.scatter()`
+
+Used to plot points.
+
+### `plt.contourf()`
+
+Used to fill decision region colors.
+
+---
+
+# Section B: Input Dataset
+
+```python
+X = np.array([
+    [1, 1],
+    [2, 1],
+    [4, 3],
+    [5, 4]
+])
+
+y = np.array([-1, -1, 1, 1])
+```
+
+---
+
+## Intuition
+
+Each row = one training example.
+
+```python
+[1,1]
+```
+
+means:
+
+* x1 = 1
+* x2 = 1
+
+---
+
+## Concept
+
+`X` contains inputs.
+
+Shape:
+
+```python
+(4,2)
+```
+
+means:
+
+* 4 samples
+* 2 features
+
+`y` contains target output.
+
+---
+
+# Section C: Initialize Weights
+
+```python
+w = np.zeros(2)
+b = 0
+lr = 1
+```
+
+---
+
+## Intuition
+
+Before learning, perceptron knows nothing.
+
+So start with:
+
+```python
+w = [0,0]
+b = 0
+```
+
+---
+
+## Meaning
+
+### `np.zeros(2)`
+
+Creates:
+
+```python
+[0.0, 0.0]
+```
+
+because 2 inputs → 2 weights.
+
+---
+
+## Parameters
+
+### `2`
+
+Important.
+
+Because input has 2 features.
+
+---
+
+### `lr = 1`
+
+Learning rate.
+
+Controls update size.
+
+Formula:
+
+[
+w = w + lr * y * x
+]
+
+---
+
+# Section D: Training Loop
+
+```python
+for epoch in range(10):
+```
+
+---
+
+## Intuition
+
+Repeat learning many times.
+
+One full pass through all data = **1 epoch**
+
+Here:
+
+```python
+10 epochs
+```
+
+---
+
+# Inner Loop
+
+```python
+for i in range(len(X)):
+```
+
+Means check every sample one by one.
+
+`len(X)=4`
+
+---
+
+# Section E: Net Input
+
+```python
+net = np.dot(X[i], w) + b
+```
+
+---
+
+# Very Important Line
+
+---
+
+## Intuition
+
+Multiply inputs with weights + add bias.
+
+---
+
+## Formula
+
+[
+net = x_1w_1 + x_2w_2 + b
+]
+
+---
+
+## Example
+
+If:
+
+```python
+X[i] = [1,1]
+w = [2,3]
+b = 1
+```
+
+Then:
+
+[
+1(2)+1(3)+1=6
+]
+
+---
+
+## `np.dot(a,b)`
+
+Dot product.
+
+For 2 arrays:
+
+```python
+[1,2] · [3,4]
+= 1×3 + 2×4 = 11
+```
+
+---
+
+# Section F: Activation Function
+
+```python
+if net >= 0:
+    output = 1
+else:
+    output = -1
+```
+
+---
+
+## Intuition
+
+This is **step activation**.
+
+If net positive → class 1
+Else → class -1
+
+---
+
+# ASCII Diagram
+
+```text
+          net
+           |
+     ------0------
+      -1      +1
+```
+
+---
+
+# Section G: Learning Law
+
+```python
+if output != y[i]:
+    w = w + lr * y[i] * X[i]
+    b = b + lr * y[i]
+```
+
+---
+
+# Most Important Part
+
+---
+
+## Intuition
+
+If prediction wrong → correct weights.
+
+If prediction right → no change.
+
+---
+
+# Formula
+
+[
+w(new)=w(old)+\eta yx
+]
+
+[
+b(new)=b(old)+\eta y
+]
+
+Where:
+
+* η = learning rate
+* y = target
+* x = input
+
+---
+
+# Example
+
+Suppose:
+
+```python
+w=[0,0]
+x=[1,1]
+y=-1
+lr=1
+```
+
+Then:
+
+```python
+w = [0,0] + 1*(-1)*[1,1]
+w = [-1,-1]
+```
+
+---
+
+# Why It Works
+
+Wrong positive? Push line backward.
+Wrong negative? Push line forward.
+
+---
+
+# Section H: Mesh Grid
+
+```python
+xx, yy = np.meshgrid(np.arange(0,6,0.1),
+                     np.arange(0,5,0.1))
+```
+
+---
+
+# Intuition
+
+Create thousands of graph points.
+
+Used to color whole graph region.
+
+---
+
+# `np.arange(start,end,step)`
+
+```python
+np.arange(0,6,0.1)
+```
+
+Gives:
+
+```python
+0,0.1,0.2,...5.9
+```
+
+---
+
+# `meshgrid()`
+
+Converts x-values and y-values into coordinate grid.
+
+---
+
+# Example
+
+```text
+xx =
+1 2 3
+1 2 3
+
+yy =
+1 1 1
+2 2 2
+```
+
+---
+
+# Section I: Predict Grid Points
+
+```python
+for each point:
+    net = dot(point,w)+b
+```
+
+Used to classify every graph location.
+
+Then reshape.
+
+```python
+Z = np.array(Z).reshape(xx.shape)
+```
+
+---
+
+# Why reshape?
+
+Because contourf needs matrix form.
+
+---
+
+# Section J: Plotting
+
+```python
+plt.contourf(xx, yy, Z, alpha=0.4, cmap="bwr")
+```
+
+---
+
+## Meaning
+
+Filled color background.
+
+* Blue region = class -1
+* Red region = class 1
+
+---
+
+## Parameters
+
+### `alpha=0.4`
+
+Transparency.
+
+Optional.
+
+### `cmap="bwr"`
+
+Color map:
+
+* blue white red
+
+Optional.
+
+---
+
+---
+
+```python
+plt.scatter(X[:,0], X[:,1], c=y, cmap="bwr", s=100)
+```
+
+---
+
+# Meaning
+
+Plot original points.
+
+---
+
+## `X[:,0]`
+
+All rows first column.
+
+```python
+x coordinates
+```
+
+## `X[:,1]`
+
+All rows second column.
+
+```python
+y coordinates
+```
+
+---
+
+# Example
+
+```python
+X =
+[[1,1],
+ [2,1],
+ [4,3]]
+```
+
+Then:
+
+```python
+X[:,0] = [1,2,4]
+X[:,1] = [1,1,3]
+```
+
+---
+
+# Output Graph Meaning
+
+```text
+Blue Area  -> class -1
+Red Area   -> class 1
+Line Between = decision boundary
+```
+
+---
+
+# Decision Boundary Formula
+
+When:
+
+[
+w_1x_1 + w_2x_2 + b = 0
+]
+
+That line separates classes.
+
+---
+
+# Final Learned Process
+
+```text
+Input points
+   ↓
+Guess classes
+   ↓
+Wrong?
+   ↓ yes
+Update weights
+   ↓
+Repeat epochs
+   ↓
+Final separating line
+```
+
+---
+
+# Common Viva Questions
+
+## Q1 What is perceptron?
+
+Single layer neural network for binary classification.
+
+---
+
+## Q2 Why bias used?
+
+Moves decision boundary left/right.
+
+---
+
+## Q3 Why learning rate used?
+
+Controls update speed.
+
+---
+
+## Q4 What if classes not linearly separable?
+
+Perceptron fails.
+
+---
+
+## Q5 What is epoch?
+
+One complete pass through training data.
+
+---
+
+# Common Mistakes
+
+### 1. Using 0 and 1 instead of -1 and 1
+
+Perceptron formula easier with -1/+1.
+
+### 2. Forget bias update
+
+Wrong learning.
+
+### 3. Wrong dot product shape
+
+Need matching features.
+
+---
+
+# Easy Memory Trick
+
+```text
+Predict
+Check
+Wrong?
+Fix weights
+Repeat
+Plot
+```
+
+---
+
+# Exam Answer Summary
+
+Perceptron uses weighted sum + step activation. If output wrong, weights updated using perceptron learning law until classes are separated. Decision regions are shown graphically using contour plot.
+
+---
+
+# If you want, I can also give you **line-by-line dry run of first 2 epochs with exact weight updates**, which is usually asked in viva.
