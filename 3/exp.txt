@@ -1,0 +1,813 @@
+# Line-by-Line Explanation of Perceptron Neural Network Program
+
+---
+
+# Program Title
+
+```python
+# Program: Perceptron Neural Network to Recognize Even and Odd Numbers
+# Digits are given in ASCII form (0 to 9)
+```
+
+## Explanation
+
+These are comments.
+
+They describe:
+
+* The purpose of the program
+* Digits are represented using ASCII binary patterns
+* The model classifies digits into:
+
+  * Even
+  * Odd
+
+Comments do not execute.
+
+---
+
+# Import Libraries
+
+```python
+import numpy as np
+```
+
+## Explanation
+
+Imports NumPy library.
+
+Used for:
+
+* Arrays
+* Numerical operations
+* Matrix handling
+
+`np` is a short alias for NumPy.
+
+---
+
+```python
+from sklearn.model_selection import train_test_split
+```
+
+## Explanation
+
+Imports function to split dataset.
+
+Used to divide data into:
+
+* Training data
+* Testing data
+
+---
+
+```python
+from sklearn.linear_model import Perceptron
+```
+
+## Explanation
+
+Imports Perceptron Neural Network model.
+
+Perceptron is:
+
+* Single-layer neural network
+* Binary classifier
+
+Used here for:
+
+```text
+Even vs Odd
+```
+
+---
+
+```python
+from sklearn.metrics import accuracy_score
+```
+
+## Explanation
+
+Imports function to calculate model accuracy.
+
+Accuracy formula:
+
+\text{Accuracy} = \frac{\text{Correct Predictions}}{\text{Total Predictions}}
+
+---
+
+```python
+import matplotlib.pyplot as plt
+```
+
+## Explanation
+
+Imports Matplotlib plotting library.
+
+Used to:
+
+* Display digit images
+* Visualize predictions
+
+`plt` means plotting.
+
+---
+
+# ASCII Digit Representation
+
+```python
+# ASCII representation of digits (5x3 matrix)
+# 1 = white pixel, 0 = black pixel
+```
+
+## Explanation
+
+Digits are represented using:
+
+* `1` → filled pixel
+* `0` → empty pixel
+
+Each digit is stored in:
+
+```text
+5 rows × 3 columns
+```
+
+---
+
+# Dictionary of Digits
+
+```python
+digits_ascii = {
+```
+
+## Explanation
+
+Creates dictionary storing ASCII patterns for digits 0–9.
+
+Dictionary format:
+
+```python
+key : value
+```
+
+Example:
+
+```python
+0 : pattern of 0
+```
+
+---
+
+# Digit 0 Pattern
+
+```python
+0: ["111",
+    "101",
+    "101",
+    "101",
+    "111"],
+```
+
+## Explanation
+
+ASCII design of digit 0.
+
+Visual form:
+
+```text
+111
+101
+101
+101
+111
+```
+
+Looks like:
+
+```text
+###
+# #
+# #
+# #
+###
+```
+
+---
+
+# Digit 1 Pattern
+
+```python
+1: ["010",
+    "110",
+    "010",
+    "010",
+    "111"],
+```
+
+## Explanation
+
+Represents digit 1.
+
+Visual form:
+
+```text
+ #
+##
+ #
+ #
+###
+```
+
+---
+
+# Remaining Digits
+
+Same logic continues for:
+
+```python
+2,3,4,5,6,7,8,9
+```
+
+Each digit has:
+
+* 5 rows
+* 3 columns
+* Binary pattern
+
+---
+
+# Create Feature and Label Lists
+
+```python
+X = []
+y = []
+```
+
+## Explanation
+
+Creates empty lists.
+
+| Variable | Purpose        |
+| -------- | -------------- |
+| `X`      | Input features |
+| `y`      | Output labels  |
+
+---
+
+# Loop Through Digits
+
+```python
+for digit, pattern in digits_ascii.items():
+```
+
+## Explanation
+
+Loops through dictionary.
+
+Example iteration:
+
+```python
+digit = 0
+pattern = ["111","101","101","101","111"]
+```
+
+---
+
+# Empty Vector
+
+```python
+vector = []
+```
+
+## Explanation
+
+Creates empty list.
+
+Used to store flattened pixel values.
+
+---
+
+# Loop Through Rows
+
+```python
+for row in pattern:
+```
+
+## Explanation
+
+Reads each row one by one.
+
+Example:
+
+```python
+row = "111"
+```
+
+then
+
+```python
+row = "101"
+```
+
+---
+
+# Loop Through Pixels
+
+```python
+for pixel in row:
+```
+
+## Explanation
+
+Reads each character in row.
+
+Example:
+
+```text
+"111"
+```
+
+becomes:
+
+```text
+1
+1
+1
+```
+
+---
+
+# Convert Pixel to Integer
+
+```python
+vector.append(int(pixel))
+```
+
+## Explanation
+
+Converts character to integer.
+
+Example:
+
+```python
+"1" → 1
+"0" → 0
+```
+
+Adds into vector.
+
+---
+
+# Final Flattened Vector
+
+Example for digit 0:
+
+```text
+111
+101
+101
+101
+111
+```
+
+becomes:
+
+```python
+[1,1,1,1,0,1,1,0,1,1,0,1,1,1,1]
+```
+
+---
+
+# Add Vector to Dataset
+
+```python
+X.append(vector)
+```
+
+## Explanation
+
+Stores digit feature vector into dataset.
+
+`X` now contains:
+
+```python
+[
+ [1,1,1,1,0,1,...],
+ [0,1,0,1,1,0,...],
+ ...
+]
+```
+
+---
+
+# Check Even/Odd
+
+```python
+if digit % 2 == 0:
+```
+
+## Explanation
+
+Checks whether digit is even.
+
+Modulus operator `%` gives remainder.
+
+Examples:
+
+```python
+4 % 2 = 0
+5 % 2 = 1
+```
+
+---
+
+# Even Label
+
+```python
+y.append(0)
+```
+
+## Explanation
+
+Stores:
+
+```text
+0 = Even
+```
+
+---
+
+# Odd Label
+
+```python
+else:
+    y.append(1)
+```
+
+## Explanation
+
+Stores:
+
+```text
+1 = Odd
+```
+
+---
+
+# Convert Lists to NumPy Arrays
+
+```python
+X = np.array(X)
+y = np.array(y)
+```
+
+## Explanation
+
+Converts Python lists into NumPy arrays.
+
+Machine learning models work better with arrays.
+
+---
+
+# Split Dataset
+
+```python
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42
+)
+```
+
+## Explanation
+
+Splits data into:
+
+* Training data
+* Testing data
+
+---
+
+## Meaning of Parameters
+
+### `test_size=0.3`
+
+```text
+30% testing
+70% training
+```
+
+---
+
+### `random_state=42`
+
+Keeps same split every time program runs.
+
+Useful for reproducibility.
+
+---
+
+# Create Perceptron Model
+
+```python
+model = Perceptron(max_iter=1000)
+```
+
+## Explanation
+
+Creates Perceptron Neural Network.
+
+### `max_iter=1000`
+
+Means:
+
+* Model can train up to 1000 iterations.
+
+---
+
+# Perceptron Working
+
+Perceptron computes weighted sum:
+
+y = w_1x_1 + w_2x_2 + w_3x_3 + \cdots + b
+
+Then decides:
+
+* Even
+* Odd
+
+---
+
+# Train Model
+
+```python
+model.fit(X_train, y_train)
+```
+
+## Explanation
+
+Trains model using training data.
+
+Learning process:
+
+1. Predict output
+2. Compare with actual answer
+3. Update weights
+4. Repeat
+
+---
+
+# Predict Outputs
+
+```python
+y_pred = model.predict(X_test)
+```
+
+## Explanation
+
+Uses trained model on unseen data.
+
+Produces predictions like:
+
+```python
+[0,1,1,0]
+```
+
+---
+
+# Print Accuracy
+
+```python
+print("Accuracy:", accuracy_score(y_test, y_pred))
+```
+
+## Explanation
+
+Calculates percentage of correct predictions.
+
+Example output:
+
+```text
+Accuracy: 1.0
+```
+
+means:
+
+```text
+100% correct
+```
+
+---
+
+# Print Heading
+
+```python
+print("\nPredictions:")
+```
+
+## Explanation
+
+`\n` means new line.
+
+Displays:
+
+```text
+Predictions:
+```
+
+---
+
+# Loop Through Test Samples
+
+```python
+for i in range(len(X_test)):
+```
+
+## Explanation
+
+Loops through all testing samples.
+
+---
+
+# Print Pattern Heading
+
+```python
+print("\nDigit Pattern:")
+```
+
+## Explanation
+
+Displays heading before showing digit matrix.
+
+---
+
+# Reshape Vector
+
+```python
+img = X_test[i].reshape(5, 3)
+```
+
+## Explanation
+
+Converts 1D vector back into:
+
+```text
+5 × 3 matrix
+```
+
+Example:
+
+```python
+[1,1,1,1,0,1,...]
+```
+
+becomes:
+
+```text
+111
+101
+101
+101
+111
+```
+
+---
+
+# Print Each Row
+
+```python
+for row in img:
+    print(row)
+```
+
+## Explanation
+
+Prints digit matrix row by row.
+
+---
+
+# Print Actual Label
+
+```python
+print("Actual:", "Even" if y_test[i] == 0 else "Odd")
+```
+
+## Explanation
+
+Ternary operator.
+
+If:
+
+```python
+y_test[i] == 0
+```
+
+print:
+
+```text
+Even
+```
+
+Otherwise:
+
+```text
+Odd
+```
+
+---
+
+# Print Predicted Label
+
+```python
+print("Predicted:", "Even" if y_pred[i] == 0 else "Odd")
+```
+
+## Explanation
+
+Displays model prediction.
+
+---
+
+# Display Image
+
+```python
+plt.imshow(img, cmap='gray')
+```
+
+## Explanation
+
+Shows digit as image.
+
+### `cmap='gray'`
+
+Uses grayscale colors.
+
+---
+
+# Image Title
+
+```python
+plt.title(f"Actual: {y_test[i]}  Predicted: {y_pred[i]}")
+```
+
+## Explanation
+
+Displays title on image.
+
+Example:
+
+```text
+Actual: 0 Predicted: 1
+```
+
+---
+
+# Show Image
+
+```python
+plt.show()
+```
+
+## Explanation
+
+Displays image window/output.
+
+Without this:
+
+* image will not appear.
+
+---
+
+# Overall Flow of Program
+
+```text
+Create ASCII Digits
+        ↓
+Convert into Feature Vectors
+        ↓
+Assign Even/Odd Labels
+        ↓
+Split Dataset
+        ↓
+Train Perceptron
+        ↓
+Predict Outputs
+        ↓
+Calculate Accuracy
+        ↓
+Display Results
+```
+
+---
+
+# Final Summary
+
+This program:
+
+* Creates ASCII digit patterns for numbers 0–9
+* Converts them into binary vectors
+* Trains a Perceptron Neural Network
+* Classifies digits as:
+
+  * Even
+  * Odd
+* Displays prediction accuracy and digit images.
